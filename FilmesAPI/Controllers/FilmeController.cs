@@ -46,5 +46,32 @@ namespace FilmesApi.Controllers
             }
             return NotFound();
         }
+        [HttpPut("{id}")]//método específico para atualização do recurso
+        public IActionResult AtualizaFilmes(int id, [FromBody] Filme filmeNovo)
+        {
+            Filme filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
+            if(filme == null)
+            {
+                return NotFound();
+            }
+            filme.Titulo = filmeNovo.Titulo;
+            filme.Genero = filmeNovo.Genero;
+            filme.Duracao = filmeNovo.Duracao;
+            filme.Diretor = filmeNovo.Diretor;
+            _context.SaveChanges(); //Salvar as mudanças feitas.
+            return NoContent(); //Boa prática de retorno no put é retornar nenhum conteúdo, mas não gostei.
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeletaFilme(int id)
+        {
+            Filme filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
+            if (filme == null)
+            {
+                return NotFound();
+            }
+            _context.Remove(filme);
+            _context.SaveChanges();
+            return NoContent();
+        }
     }
 }
