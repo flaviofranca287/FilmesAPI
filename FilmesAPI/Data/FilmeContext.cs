@@ -11,7 +11,6 @@ namespace FilmesAPI.Data
 
         }
         // é o nosso conjunto de dados do banco que vamos conseguir fazzer de maneira encapsulada o acesso aos dados do banco.
-
         public DbSet<Filme> Filmes { get; set; }
     }
 
