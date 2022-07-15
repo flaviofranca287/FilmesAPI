@@ -1,4 +1,5 @@
-﻿using FilmesAPI.Data;
+﻿using FilmesApi.Data.Dtos;
+using FilmesAPI.Data;
 using FilmesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -22,8 +23,15 @@ namespace FilmesApi.Controllers
             _context = context;
         }
         [HttpPost]
-        public IActionResult AdicionaFilme([FromBody] Filme filme)
+        public IActionResult AdicionaFilme([FromBody] CreateFilmeDto filmeDto)
         {
+            Filme filme = new Filme
+            {
+                Titulo = filmeDto.Titulo,
+                Genero = filmeDto.Genero,
+                Duracao = filmeDto.Duracao,
+                Diretor = filmeDto.Diretor
+            };
             //Adicionar um objeto mapeado no banco através do DbContext e salvar essa operação
             _context.Filmes.Add(filme);
             _context.SaveChanges();//Sem isso ele não salva o estado.
@@ -42,22 +50,31 @@ namespace FilmesApi.Controllers
             Filme filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
             if(filme != null)
             {
-                return Ok(filme);
+                ReadFilmeDto filmeDto = new ReadFilmeDto
+                {
+                    Titulo = filme.Titulo,
+                    Genero = filme.Genero,
+                    Diretor = filme.Diretor,
+                    Duracao = filme.Duracao,
+                    Id = filme.Id,
+                    HoraDaConsulta = DateTime.Now
+                };
+                return Ok(filmeDto);
             }
             return NotFound();
         }
         [HttpPut("{id}")]//método específico para atualização do recurso
-        public IActionResult AtualizaFilmes(int id, [FromBody] Filme filmeNovo)
+        public IActionResult AtualizaFilmes(int id, [FromBody] UpdateFilmeDto filmeDtoNovo)
         {
             Filme filme = _context.Filmes.FirstOrDefault(filme => filme.Id == id);
             if(filme == null)
             {
                 return NotFound();
             }
-            filme.Titulo = filmeNovo.Titulo;
-            filme.Genero = filmeNovo.Genero;
-            filme.Duracao = filmeNovo.Duracao;
-            filme.Diretor = filmeNovo.Diretor;
+            filme.Titulo = filmeDtoNovo.Titulo;
+            filme.Genero = filmeDtoNovo.Genero;
+            filme.Duracao = filmeDtoNovo.Duracao;
+            filme.Diretor = filmeDtoNovo.Diretor;
             _context.SaveChanges(); //Salvar as mudanças feitas.
             return NoContent(); //Boa prática de retorno no put é retornar nenhum conteúdo, mas não gostei.
         }
